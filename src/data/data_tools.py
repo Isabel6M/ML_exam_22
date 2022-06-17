@@ -126,17 +126,14 @@ class EuroSatDataset(BaseDictDataset):
         The dictionary stores int : List[Path] key-value pairs
         the key is a class, the value is a list of paths of an identical class
         eg:
-
         dataset = {
             0 : ["path/to/a/01.jpg", "path/to/a/02.jpg"],
             1 : ["path/to/b/03.jpg", "path/to/b/04.jpg"]
         }
-
         Args:
             paths (List[Path]): filepaths, where the class name is the parent folder
         """
         super().__init__(paths)
-        
 
     def __len__(self) -> int:
         return len(self.paths)
@@ -154,11 +151,12 @@ class EuroSatDataset(BaseDictDataset):
             # the value is the current List of Paths
             # if there is no value for the key, return an empty List
             # TODO ~ finish these 2 lines of code below
-            key: int = None
-            value: np.ndarray = None
+            key: int = self.name_mapping[class_name]
+            value: np.ndarray = self.dataset.get(key,np.array([]))
 
             # we append the new path to the values we already had
             self.dataset[key] = np.append(value, np.array([path]))
+
 
 
 class GenericStreamer:
