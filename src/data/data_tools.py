@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 from loguru import logger
 
-# import tifffile
+import tifffile
 from tqdm import tqdm
 
 from src.typehinting import DictDataset, ListDataset
@@ -298,6 +298,9 @@ class SiameseStreamer(GenericStreamer):
         """
         batch: List = []
         (same, equal), (other, (i, j)) = self.random_index()
+        test1 = (same, equal), (other, (i, j))
+        i,j = test1[1][1]
+        equal = test1[0][1]
 
         # retrieve the arrays with paths from the three classes:
         #   - the equal class
@@ -309,6 +312,12 @@ class SiameseStreamer(GenericStreamer):
             # use tifffile to read the image
             # cast the image to np.int32
             # TODO ~ 4 till 5 lines of code
+            
+            img1, img2 = self.dataset[equal][idx]
+            tot_img = img1,img2
+            img_tif = tifffile.imread(tot_img)
+            img_int = np.asarray(img_tif, dtype="int32")
+            batch.append(img_int,1)
             self.index += 1
 
         for idx in other:
@@ -316,10 +325,13 @@ class SiameseStreamer(GenericStreamer):
             # use tifffile to read the image
             # cast the image to np.int32
             # TODO ~ 4 till 5 lines of code
+            img1, img2 = self.dataset[i][idx[0]], self.dataset[j][idx[1]] 
+            tot_img = img1,img2
+            img_tif = tifffile.imread(tot_img)
+            img_int = np.asarray(img_tif, dtype="int32")
+            batch.append(img_int,0)
             self.index += 1
-
         random.shuffle(batch)
-
         return batch
 
     def stream(self) -> Iterator:
