@@ -298,10 +298,9 @@ class SiameseStreamer(GenericStreamer):
         """
         batch: List = []
         (same, equal), (other, (i, j)) = self.random_index()
-        
-        test1 = (same, equal), (other, (i, j))
-        i,j = test1[1][1]
-        equal = test1[0][1]
+        e_image = self.dataset[equal]
+        i_images = self.dataset[i]
+        j_images = self.dataset[j]
 
        
 
@@ -316,11 +315,9 @@ class SiameseStreamer(GenericStreamer):
             # cast the image to np.int32
             # TODO ~ 4 till 5 lines of code
             
-            img1, img2 = self.dataset[equal][idx]
-            tot_img = img1,img2
-            img_tif = tifffile.imread(tot_img)
-            img_int = np.asarray(img_tif, dtype="int32")
-            batch.append((img_int),1)
+            img1, img2 = tifffile.imread(e_image[idx[0]]).astype(np.int32),tifffile.imread(e_image[idx[1]]).astype(np.int32)
+            batch.append((img1, img2,1))
+
             self.index += 1
 
         for idx in other:
@@ -328,11 +325,8 @@ class SiameseStreamer(GenericStreamer):
             # use tifffile to read the image
             # cast the image to np.int32
             # TODO ~ 4 till 5 lines of code
-            img1, img2 = self.dataset[i][idx[0]], self.dataset[j][idx[1]] 
-            tot_img = img1,img2
-            img_tif = tifffile.imread(tot_img)
-            img_int = np.asarray(img_tif, dtype="int32")
-            batch.append((img_int),0)
+            img1, img2 = tifffile.imread(i_images[idx[0]]).astype(np.int32), tifffile.imread(j_images[idx[1]]).astype(np.int32)
+            batch.append((img1,img2,0))
             self.index += 1
         random.shuffle(batch)
         return batch
