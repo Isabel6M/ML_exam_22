@@ -298,9 +298,12 @@ class SiameseStreamer(GenericStreamer):
         """
         batch: List = []
         (same, equal), (other, (i, j)) = self.random_index()
+        
         test1 = (same, equal), (other, (i, j))
         i,j = test1[1][1]
         equal = test1[0][1]
+
+       
 
         # retrieve the arrays with paths from the three classes:
         #   - the equal class
@@ -317,7 +320,7 @@ class SiameseStreamer(GenericStreamer):
             tot_img = img1,img2
             img_tif = tifffile.imread(tot_img)
             img_int = np.asarray(img_tif, dtype="int32")
-            batch.append(img_int,1)
+            batch.append((img_int),1)
             self.index += 1
 
         for idx in other:
@@ -329,7 +332,7 @@ class SiameseStreamer(GenericStreamer):
             tot_img = img1,img2
             img_tif = tifffile.imread(tot_img)
             img_int = np.asarray(img_tif, dtype="int32")
-            batch.append(img_int,0)
+            batch.append((img_int),0)
             self.index += 1
         random.shuffle(batch)
         return batch
